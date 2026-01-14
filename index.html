@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Magic Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* WhatsApp Colors & Font */
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding-bottom: 80px;
+      /* Input area ke liye jagah */
+      background-color: #e5ddd5;
+      /* WhatsApp Chat Background Color */
+      background-image: url("https://i.ibb.co/3s1f9Jq/default-wallpaper.png");
+      /* Optional Doodle pattern */
+      background-repeat: repeat;
+    }
+
+    /* Top Green Header */
+    #header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background-color: #075e54;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    /* Language Dropdown Style */
+    select {
+      background: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #075e54;
+      cursor: pointer;
+    }
+
+    /* Message Area */
+    #messages {
+      list-style-type: none;
+      margin: 70px 0 0 0;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Chat Bubble Design */
+    #messages>li {
+      background: white;
+      padding: 10px 15px;
+      margin-bottom: 10px;
+      border-radius: 0px 10px 10px 10px;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+      max-width: 75%;
+      align-self: flex-start;
+      /* Messages left side par */
+      font-size: 15px;
+      line-height: 1.4;
+      position: relative;
+    }
+
+    /* Language Tag style */
+    .lang-tag {
+      font-size: 10px;
+      font-weight: bold;
+      color: #075e54;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    /* Input Bar at Bottom */
+    #form {
+      background: #f0f0f0;
+      padding: 10px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    #input {
+      border: none;
+      padding: 12px;
+      flex-grow: 1;
+      border-radius: 30px;
+      margin-right: 10px;
+      font-size: 16px;
+    }
+
+    #input:focus {
+      outline: none;
+    }
+
+    /* Send Button */
+    #form>button {
+      background: #0088cc;
+      /* Telegram/WhatsApp Blue/Green */
+      border: none;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      color: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #form>button:hover {
+      background: #0077b5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="header">
+    <h3>Magic-Chat</h3>
+    <select id="language-select">
+      <option value="en">English</option>
+      <option value="hi">Hindi</option>
+      <option value="es">Spanish</option>
+      <option value="fr">French</option>
+      <option value="ja">Japanese</option>
+      <option value="de">German</option>
+    </select>
+  </div>
+
+  <ul id="messages">
+  </ul>
+
+  <form id="form" action="">
+    <input id="input" autocomplete="off" placeholder="Type a message..." /><button>➤</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+    var messages = document.getElementById('messages');
+    var langSelect = document.getElementById('language-select');
+
+    // Set Language
+    socket.emit('set language', langSelect.value);
+
+    langSelect.addEventListener('change', function () {
+      socket.emit('set language', this.value);
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('chat message', input.value);
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', function (msg) {
+      var item = document.createElement('li');
+
+      // Thoda formatting clean karte hain
+      // Message format: "[EN] : Text"
+      var parts = msg.split(':');
+      var langCode = parts[0];
+      var textContent = parts.slice(1).join(':'); // Baaki ka text
+
+      if (parts.length > 1) {
+        // Design wala message
+        item.innerHTML = `<span class="lang-tag">${langCode}</span> ${textContent}`;
+      } else {
+        // Normal message
+        item.textContent = msg;
+      }
+
+      messages.appendChild(item);
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  </script>
+</body>
+
+</html>
