@@ -14,6 +14,41 @@
       display: flex;
       flex-direction: column;
     }
+    /* --- CSS Replace Karein --- */
+     body { 
+        height: 100%; 
+        height: 100dvh; /* Ye keyboard ki wajah se hone wali problem theek karega */
+        margin: 0; 
+        background: #e5ddd5; 
+        font-family: sans-serif; 
+        overflow: hidden; 
+    }
+
+    #screen-chat { 
+        height: 100%; 
+        display: none; 
+        flex-direction: column; 
+    }
+
+    #messages { 
+        flex-grow: 1; 
+        list-style: none; 
+        padding: 10px; 
+        overflow-y: auto; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 10px; 
+        background: #e5ddd5; 
+        min-height: 0; /* Keyboard aane par chat ko shrink hone dega */
+    }
+    
+    #chat-form { 
+        background: #f0f0f0; 
+        padding: 8px; 
+        display: flex; 
+        align-items: center; 
+        flex-shrink: 0; /* Input dabega nahi */
+    }
 
     .screen {
       display: none;
@@ -242,7 +277,17 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const socket = io();
+    const socket = io(); // Ye line pehle se hogi
+    
+    // --- YE ADD KAREIN (Responsive Fix) ---
+    const msgInput = document.getElementById('msg-input');
+    
+    msgInput.addEventListener('focus', () => {
+        // Keyboard khulte hi input box ko saamne lao
+        setTimeout(() => {
+            msgInput.scrollIntoView({ behavior: 'smooth' });
+        }, 300);
+    });
     let currentRoom = "";
     let myUserName = ""; // Yahan hum apna naam store karenge
 
@@ -354,3 +399,4 @@
 </body>
 
 </html>
+
