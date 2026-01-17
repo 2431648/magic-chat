@@ -2,365 +2,402 @@
 <html>
 
 <head>
-  <title>Magic Chat Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    /* CSS Styles */
-    body {
-      font-family: sans-serif;
-      margin: 0;
-      background: #e5ddd5;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    
-    #chat-form { 
-        background: #f0f0f0; 
-        padding: 8px; 
-        display: flex; 
-        align-items: center; 
-        flex-shrink: 0; /* Input dabega nahi */
-    }
+    <title>Magic Chat Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content">
+    <style>
+        /* --- WhatsApp Style CSS --- */
+        html,
+        body {
+            height: 100%;
+            height: 100dvh;
+            /* Mobile Height Fix */
+            margin: 0;
+            background: #e5ddd5;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
 
-    .screen {
-      display: none;
-      height: 100%;
-      width: 100%;
-      flex-direction: column;
-    }
+        .screen {
+            display: none;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+        }
 
-    .active {
-      display: flex;
-    }
+        .active {
+            display: flex;
+        }
 
-    #screen-login {
-      background: #075e54;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
+        /* Login */
+        #screen-login {
+            background: #075e54;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
 
-    input {
-      padding: 15px;
-      margin: 10px;
-      width: 80%;
-      border-radius: 20px;
-      border: none;
-      font-size: 16px;
-      outline: none;
-    }
+        input {
+            padding: 15px;
+            margin: 10px;
+            width: 80%;
+            border-radius: 20px;
+            border: none;
+            font-size: 16px;
+            outline: none;
+        }
 
-    .auth-btn {
-      padding: 12px 30px;
-      background: #25D366;
-      color: white;
-      border: none;
-      border-radius: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      margin: 5px;
-    }
+        .auth-btn {
+            padding: 12px 30px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
 
-    #header-contacts {
-      background: #075e54;
-      color: white;
-      padding: 15px;
-      font-weight: bold;
-      font-size: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        /* Contacts */
+        #header-contacts {
+            background: #075e54;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+            font-size: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
 
-    #user-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      overflow-y: auto;
-      flex-grow: 1;
-    }
+        #user-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
 
-    .user-card {
-      background: white;
-      padding: 15px;
-      margin: 1px 0;
-      display: flex;
-      justify-content: space-between;
-      cursor: pointer;
-      align-items: center;
-    }
+        .user-card {
+            background: white;
+            padding: 15px;
+            margin: 1px 0;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            align-items: center;
+        }
 
-    .status-dot {
-      height: 10px;
-      width: 10px;
-      background: #ccc;
-      border-radius: 50%;
-    }
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background: #ccc;
+            border-radius: 50%;
+        }
 
-    .online {
-      background: #25D366;
-    }
+        .online {
+            background: #25D366;
+        }
 
-    #chat-header {
-      background: #075e54;
-      color: white;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+        /* CHAT SCREEN (WhatsApp Style) */
+        #screen-chat {
+            height: 100%;
+            position: relative;
+        }
 
-    #messages {
-      flex-grow: 1;
-      list-style: none;
-      padding: 10px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      background: #e5ddd5;
-    }
+        #chat-header {
+            background: #075e54;
+            color: white;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            z-index: 10;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
 
-    .msg {
-      padding: 8px 12px;
-      border-radius: 10px;
-      max-width: 70%;
-      font-size: 15px;
-      word-wrap: break-word;
-    }
+        #messages {
+            flex-grow: 1;
+            list-style: none;
+            padding: 10px;
+            padding-bottom: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #e5ddd5;
+            /* Background pattern like WhatsApp */
+            background-image: url("https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png");
+            background-repeat: repeat;
+        }
 
-    .sent {
-      background: #dcf8c6;
-      align-self: flex-end;
-    }
+        .msg {
+            padding: 8px 12px;
+            border-radius: 10px;
+            max-width: 75%;
+            font-size: 15px;
+            word-wrap: break-word;
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
 
-    .received {
-      background: white;
-      align-self: flex-start;
-    }
+        .sent {
+            background: #dcf8c6;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
 
-    #chat-form {
-      background: #f0f0f0;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-    }
+        .received {
+            background: white;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
 
-    #msg-input {
-      flex-grow: 1;
-      padding: 12px;
-      border-radius: 30px;
-      border: none;
-      margin-right: 5px;
-    }
+        /* Input Area Fixed at Bottom */
+        #chat-form {
+            background: #f0f0f0;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
 
-    .icon-btn {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      border: none;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 5px;
-    }
+        #msg-input {
+            flex-grow: 1;
+            padding: 12px;
+            border-radius: 30px;
+            border: none;
+            margin-right: 5px;
+            font-size: 16px;
+            background: white;
+        }
 
-    #mic-btn {
-      background: #128C7E;
-    }
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
 
-    #send-btn {
-      background: #075e54;
-    }
+        #mic-btn {
+            background: #128C7E;
+        }
 
-    #mic-btn.listening {
-      background: #ff3b30;
-      animation: pulse 1.5s infinite;
-    }
+        #send-btn {
+            background: #075e54;
+        }
 
-    @keyframes pulse {
-      0% {
-        transform: scale(1);
-      }
+        #mic-btn.listening {
+            background: #ff3b30;
+            animation: pulse 1.5s infinite;
+        }
 
-      50% {
-        transform: scale(1.1);
-      }
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
 
-      100% {
-        transform: scale(1);
-      }
-    }
+            50% {
+                transform: scale(1.1);
+            }
 
-    select {
-      padding: 5px;
-      border-radius: 5px;
-      border: none;
-      font-weight: bold;
-      color: #075e54;
-      max-width: 140px;
-    }
-  </style>
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        select {
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            font-weight: bold;
+            color: #075e54;
+            max-width: 140px;
+        }
+    </style>
 </head>
 
 <body>
 
-  <div id="screen-login" class="screen active">
-    <h2>Magic Chat 🔐</h2>
-    <input id="username" placeholder="Username" autocomplete="off">
-    <input id="password" type="password" placeholder="Password" autocomplete="off">
-    <div>
-      <button class="auth-btn" onclick="login()">Login</button>
-      <button class="auth-btn" onclick="signup()">Sign Up</button>
+    <div id="screen-login" class="screen active">
+        <h2>Magic Chat 🔐</h2>
+        <input id="username" placeholder="Username" autocomplete="off">
+        <input id="password" type="password" placeholder="Password" autocomplete="off">
+        <div>
+            <button class="auth-btn" onclick="login()">Login</button>
+            <button class="auth-btn" onclick="signup()">Sign Up</button>
+        </div>
+        <p id="error-msg" style="color: #ff3b30; font-weight: bold; margin-top: 15px;"></p>
     </div>
-    <p id="error-msg" style="color: #ff3b30; font-weight: bold; margin-top: 15px;"></p>
-  </div>
 
-  <div id="screen-contacts" class="screen">
-    <div id="header-contacts">
-      <span>Contacts 👥</span>
-      <button onclick="logout()"
-        style="background:none;border:1px solid white;color:white;border-radius:5px;cursor:pointer;">Logout</button>
+    <div id="screen-contacts" class="screen">
+        <div id="header-contacts">
+            <span>Contacts 👥</span>
+            <button onclick="logout()"
+                style="background:none;border:1px solid white;color:white;border-radius:5px;cursor:pointer;">Logout</button>
+        </div>
+        <ul id="user-list"></ul>
     </div>
-    <ul id="user-list"></ul>
-  </div>
 
-  <div id="screen-chat" class="screen">
-    <div id="chat-header">
-      <button onclick="showContacts()" style="background:none;border:none;color:white;font-size:20px;">⬅</button>
-      <select id="lang-select">
-        <option value="en-US">English (Me)</option>
-        <option value="hi-IN">Hindi (Me)</option>
-        <option value="es-ES">Spanish (Me)</option>
-        <option value="fr-FR">French (Me)</option>
-        <option value="ja-JP">Japanese (Me)</option>
-      </select>
+    <div id="screen-chat" class="screen">
+        <div id="chat-header">
+            <button onclick="showContacts()" style="background:none;border:none;color:white;font-size:20px;">⬅</button>
+
+            <select id="lang-select">
+                <option value="en-US">English (Me)</option>
+                <option value="hi-IN">Hindi (Me)</option>
+                <option value="es-ES">Spanish (Me)</option>
+                <option value="fr-FR">French (Me)</option>
+                <option value="ja-JP">Japanese (Me)</option>
+                <option value="ru-RU">Russian (Me)</option>
+            </select>
+        </div>
+
+        <ul id="messages"></ul>
+
+        <form id="chat-form">
+            <input id="msg-input" placeholder="Type or Speak..." autocomplete="off">
+            <button type="button" id="mic-btn" class="icon-btn">🎤</button>
+            <button id="send-btn" class="icon-btn">➤</button>
+        </form>
     </div>
-    <ul id="messages"></ul>
-    <form id="chat-form">
-      <input id="msg-input" placeholder="Type or Speak..." autocomplete="off">
-      <button type="button" id="mic-btn" class="icon-btn">🎤</button>
-      <button id="send-btn" class="icon-btn">➤</button>
-    </form>
-  </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let currentRoom = "";
-    let myUserName = ""; // Yahan hum apna naam store karenge
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentRoom = "";
+        let myUserName = "";
 
-    // Auth
-    function signup() {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value.trim();
-      if (!u || !p) return alert("All fields required");
-      socket.emit('signup', { name: u, password: p });
-    }
-    function login() {
-      const u = document.getElementById('username').value.trim();
-      const p = document.getElementById('password').value.trim();
-      if (!u || !p) return alert("All fields required");
-      socket.emit('login', { name: u, password: p });
-    }
-    function logout() { location.reload(); }
+        // --- Mobile Keyboard Fix (Auto Scroll) ---
+        // Jab keyboard khule, toh chat ko niche scroll karo taaki last message dikhe
+        const messagesUl = document.getElementById('messages');
 
-    socket.on('auth_success', (data) => {
-      myUserName = data.name; // Naam save kar lo
-      document.getElementById('screen-login').classList.remove('active');
-      document.getElementById('screen-contacts').classList.add('active');
-      socket.emit('get_users');
-      updateLanguage();
-    });
-    socket.on('auth_error', (msg) => document.getElementById('error-msg').innerText = msg);
+        window.visualViewport.addEventListener('resize', () => {
+            messagesUl.scrollTop = messagesUl.scrollHeight;
+            document.body.style.height = window.visualViewport.height + 'px';
+        });
 
-    // Language
-    const langSelect = document.getElementById('lang-select');
-    function updateLanguage() { socket.emit('set_language', langSelect.value); }
-    langSelect.addEventListener('change', updateLanguage);
+        // --- Auth ---
+        function signup() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            if (!u || !p) return alert("All fields required");
+            socket.emit('signup', { name: u, password: p });
+        }
+        function login() {
+            const u = document.getElementById('username').value.trim();
+            const p = document.getElementById('password').value.trim();
+            if (!u || !p) return alert("All fields required");
+            socket.emit('login', { name: u, password: p });
+        }
+        function logout() { location.reload(); }
 
-    // Contacts
-    socket.on('user_list', (users) => {
-      const list = document.getElementById('user-list');
-      list.innerHTML = "";
-      users.forEach(user => {
-        const li = document.createElement('li');
-        li.className = "user-card";
-        li.innerHTML = `<span>${user.name}</span><span class="status-dot ${user.isOnline ? 'online' : ''}"></span>`;
-        li.onclick = () => {
-          document.getElementById('messages').innerHTML = ""; // Clear old chat
-          socket.emit('join_private', { toUser: user.name });
-        };
-        list.appendChild(li);
-      });
-    });
-    socket.on('refresh_users', () => { if (document.getElementById('screen-contacts').classList.contains('active')) socket.emit('get_users'); });
+        socket.on('auth_success', (data) => {
+            myUserName = data.name;
 
-    // Room Joined
-    socket.on('room_joined', (data) => {
-      currentRoom = data.roomID;
-      document.getElementById('screen-contacts').classList.remove('active');
-      document.getElementById('screen-chat').classList.add('active');
-    });
+            // ** Saved Language Load **
+            if (data.lang) {
+                document.getElementById('lang-select').value = data.lang;
+            }
 
-    // --- HISTORY LOAD LOGIC (NEW) ---
-    socket.on('chat_history', (messages) => {
-      const ul = document.getElementById('messages');
-      ul.innerHTML = ""; // Pehle safai karo
-      messages.forEach(msg => {
-        const li = document.createElement('li');
-        // Check karo ki message maine bheja tha ya kisi aur ne
-        const isMe = msg.sender === myUserName;
-        li.className = `msg ${isMe ? 'sent' : 'received'}`;
-        li.innerText = msg.text;
-        ul.appendChild(li);
-      });
-      ul.scrollTop = ul.scrollHeight;
-    });
+            document.getElementById('screen-login').classList.remove('active');
+            document.getElementById('screen-contacts').classList.add('active');
+            socket.emit('get_users');
+            updateLanguage();
+        });
 
-    // Send Message
-    document.getElementById('chat-form').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const input = document.getElementById('msg-input');
-      if (input.value && currentRoom) {
-        socket.emit('private_message', { roomID: currentRoom, msg: input.value });
-        input.value = '';
-      }
-    });
+        socket.on('auth_error', (msg) => document.getElementById('error-msg').innerText = msg);
 
-    // Receive Message (Live)
-    socket.on('receive_message', (data) => {
-      const ul = document.getElementById('messages');
-      const li = document.createElement('li');
-      li.className = `msg ${data.isMe ? 'sent' : 'received'}`;
-      li.innerText = data.text;
-      ul.appendChild(li);
-      ul.scrollTop = ul.scrollHeight;
-    });
+        // --- Language ---
+        const langSelect = document.getElementById('lang-select');
+        function updateLanguage() {
+            socket.emit('set_language', langSelect.value);
+        }
+        langSelect.addEventListener('change', updateLanguage);
 
-    // Voice
-    const micBtn = document.getElementById('mic-btn');
-    const input = document.getElementById('msg-input');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        // --- Contacts ---
+        socket.on('user_list', (users) => {
+            const list = document.getElementById('user-list');
+            list.innerHTML = "";
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.className = "user-card";
+                li.innerHTML = `<span>${user.name}</span><span class="status-dot ${user.isOnline ? 'online' : ''}"></span>`;
+                li.onclick = () => {
+                    document.getElementById('messages').innerHTML = "";
+                    socket.emit('join_private', { toUser: user.name });
+                };
+                list.appendChild(li);
+            });
+        });
+        socket.on('refresh_users', () => { if (document.getElementById('screen-contacts').classList.contains('active')) socket.emit('get_users'); });
 
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.continuous = false;
-      micBtn.addEventListener('click', () => {
-        recognition.lang = langSelect.value;
-        recognition.start();
-      });
-      recognition.onstart = () => { micBtn.classList.add("listening"); };
-      recognition.onend = () => { micBtn.classList.remove("listening"); };
-      recognition.onresult = (event) => { input.value = event.results[0][0].transcript; };
-    } else { micBtn.style.display = 'none'; }
-  </script>
+        // --- Room & History ---
+        socket.on('room_joined', (data) => {
+            currentRoom = data.roomID;
+            document.getElementById('screen-contacts').classList.remove('active');
+            document.getElementById('screen-chat').classList.add('active');
+        });
+
+        socket.on('chat_history', (messages) => {
+            const ul = document.getElementById('messages');
+            ul.innerHTML = "";
+            messages.forEach(msg => {
+                const isMe = msg.sender === myUserName;
+                const li = document.createElement('li');
+                li.className = `msg ${isMe ? 'sent' : 'received'}`;
+                li.innerText = msg.text;
+                ul.appendChild(li);
+            });
+            ul.scrollTop = ul.scrollHeight;
+        });
+
+        // --- Messaging ---
+        document.getElementById('chat-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('msg-input');
+            if (input.value && currentRoom) {
+                socket.emit('private_message', { roomID: currentRoom, msg: input.value });
+                input.value = '';
+                input.focus();
+            }
+        });
+
+        socket.on('receive_message', (data) => {
+            const ul = document.getElementById('messages');
+            const li = document.createElement('li');
+            li.className = `msg ${data.isMe ? 'sent' : 'received'}`;
+            li.innerText = data.text;
+            ul.appendChild(li);
+            ul.scrollTop = ul.scrollHeight;
+        });
+
+        // --- Voice ---
+        const micBtn = document.getElementById('mic-btn');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            micBtn.addEventListener('click', () => {
+                recognition.lang = langSelect.value;
+                recognition.start();
+            });
+            recognition.onstart = () => { micBtn.classList.add("listening"); };
+            recognition.onend = () => { micBtn.classList.remove("listening"); };
+            recognition.onresult = (event) => {
+                document.getElementById('msg-input').value = event.results[0][0].transcript;
+            };
+        } else { micBtn.style.display = 'none'; }
+    </script>
 </body>
 
 </html>
-
-
