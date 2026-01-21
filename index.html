@@ -1,348 +1,629 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Magic Chat Pro</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-  
-  <style>
-    /* --- CSS Styles (Dark Magic Theme) --- */
-    :root {
-      --bg-gradient: #050510;
-      --header-bg: rgba(255, 255, 255, 0.05);
-      --glass-bg: rgba(255, 255, 255, 0.1);
-      --neon-blue: #00f2ff;
-      --neon-purple: #bc13fe;
-      --neon-gold: #ffd700;
-      --text-color: #ffffff;
-    }
+    <title>Magic Chat Pro</title>
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-    html, body { 
-        height: 100%; height: 100dvh; margin: 0; 
-        font-family: 'Poppins', sans-serif; 
-        background: var(--bg-gradient); 
-        color: var(--text-color); overflow: hidden; 
-    }
+    <style>
+        /* --- GLOBAL RESET (VERY IMPORTANT FOR RESPONSIVENESS) --- */
+        * {
+            box-sizing: border-box;
+            /* Ye line padding ko width ke andar rakhti hai */
+        }
 
-    .screen { display: none; height: 100%; width: 100%; flex-direction: column; }
-    .active { display: flex; animation: fadeIn 0.8s ease; }
+        /* --- CSS Styles (Dark Magic Theme) --- */
+        :root {
+            --bg-gradient: #050510;
+            --header-bg: rgba(255, 255, 255, 0.05);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --neon-blue: #00f2ff;
+            --neon-purple: #bc13fe;
+            --neon-gold: #ffd700;
+            --text-color: #ffffff;
+        }
 
-    /* --- 1. LOGIN SCREEN WITH FLOATING EMOJIS --- */
-    #screen-login { 
-        align-items: center; 
-        justify-content: center; 
-        padding: 20px;
-        background: #000000; /* Simple Dark BG */
-        position: relative;
-        overflow: hidden;
-    }
+        html,
+        body {
+            height: 100%;
+            height: 100dvh;
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color);
+            overflow: hidden;
+        }
 
-    /* Floating Emojis Animation */
-    .emoji-bg {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        overflow: hidden;
-        z-index: 1; /* Card ke peeche */
-        pointer-events: none; /* Click nahi honge */
-    }
+        .screen {
+            display: none;
+            height: 100%;
+            width: 100%;
+            flex-direction: column;
+        }
 
-    .floating-emoji {
-        position: absolute;
-        bottom: -50px;
-        font-size: 30px;
-        opacity: 0.3; /* Thoda transparent taaki distract na kare */
-        animation: floatUp linear infinite;
-    }
+        .active {
+            display: flex;
+            animation: fadeIn 0.8s ease;
+        }
 
-    @keyframes floatUp {
-        0% { transform: translateY(0) rotate(0deg); opacity: 0; }
-        20% { opacity: 0.6; }
-        80% { opacity: 0.6; }
-        100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
-    }
+        /* --- 1. LOGIN SCREEN --- */
+        #screen-login {
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #000000;
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* Auth Card (Card wahi rahega, bas z-index badha diya) */
-    .auth-container {
-        position: relative;
-        z-index: 10; /* Emojis ke upar */
-        width: 100%;
-        max-width: 380px;
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px);
-        padding: 40px 30px;
-        border-radius: 25px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        text-align: center;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
-        animation: floatCard 6s ease-in-out infinite;
-    }
+        .emoji-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
 
-    @keyframes floatCard {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-    }
+        .floating-emoji {
+            position: absolute;
+            bottom: -50px;
+            font-size: 30px;
+            opacity: 0.3;
+            animation: floatUp linear infinite;
+        }
 
-    h2 { 
-        font-weight: 600; 
-        background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        margin-bottom: 25px; margin-top: 0;
-        font-size: 28px;
-        filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5));
-    }
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
 
-    .form-group { display: flex; flex-direction: column; gap: 20px; }
-    
-    input { 
-        padding: 15px; width: 100%; box-sizing: border-box;
-        border-radius: 30px; border: 1px solid rgba(255,255,255,0.2); 
-        background: rgba(0,0,0,0.4); color: white; font-size: 16px; outline: none; 
-        transition: all 0.3s ease; 
-    }
-    input:focus { border-color: var(--neon-blue); box-shadow: 0 0 20px rgba(0, 242, 255, 0.4); transform: scale(1.02); }
+            20% {
+                opacity: 0.6;
+            }
 
-    .auth-btn { 
-        width: 100%; padding: 14px; 
-        background: linear-gradient(90deg, var(--neon-blue), #0051ff); 
-        color: white; border: none; border-radius: 30px; 
-        font-weight: bold; font-size: 16px; cursor: pointer; 
-        box-shadow: 0 0 15px rgba(0, 242, 255, 0.3); margin-top: 10px;
-        transition: all 0.3s;
-    }
-    .auth-btn:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 0 30px var(--neon-blue); letter-spacing: 1px; }
+            80% {
+                opacity: 0.6;
+            }
 
-    .toggle-text { margin-top: 20px; font-size: 14px; color: rgba(255,255,255,0.7); }
-    .toggle-link { color: var(--neon-gold); cursor: pointer; font-weight: bold; transition: 0.3s; }
-    .toggle-link:hover { text-shadow: 0 0 10px var(--neon-gold); }
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
 
-    .hidden { display: none; }
+        /* --- AUTH CARD (FIXED RESPONSIVENESS) --- */
+        .auth-container {
+            position: relative;
+            z-index: 10;
 
-    /* --- CONTACTS & CHAT STYLES (Unchanged) --- */
-    #header-contacts { background: var(--header-bg); padding: 20px; font-size: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-    #user-list { list-style: none; padding: 15px; margin: 0; overflow-y: auto; flex-grow: 1; }
-    .user-card { background: var(--glass-bg); padding: 18px; margin: 10px 0; border-radius: 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease; }
-    .user-card:hover { transform: translateY(-5px) scale(1.02); background: rgba(255, 255, 255, 0.15); border-color: var(--neon-purple); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
-    .status-dot { height: 12px; width: 12px; background: #555; border-radius: 50%; transition: 0.3s; } .online { background: #0f0; box-shadow: 0 0 15px #0f0; }
+            /* Width Settings */
+            width: 90%;
+            /* Mobile par 90% lega */
+            max-width: 380px;
+            /* PC par isse zyada nahi failega */
+            margin: auto;
+            /* Center ensure karne ke liye */
 
-    #screen-chat { height: 100%; position: relative; }
-    #chat-header { background: rgba(0,0,0,0.3); padding: 15px; display: flex; justify-content: space-between; z-index: 10; border-bottom: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-    #messages { flex-grow: 1; list-style: none; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; background-image: radial-gradient(rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 40px 40px; }
-    
-    .msg { padding: 12px 18px; border-radius: 20px; max-width: 75%; word-wrap: break-word; animation: popIn 0.4s; transition: 0.3s; }
-    .msg:hover { transform: scale(1.01); }
-    .sent { align-self: flex-end; background: rgba(0, 242, 255, 0.15); border: 1px solid var(--neon-blue); color: white; border-bottom-right-radius: 2px; box-shadow: 0 0 10px rgba(0, 242, 255, 0.1); }
-    .received { align-self: flex-start; background: rgba(255, 215, 0, 0.15); border: 1px solid var(--neon-gold); color: white; border-bottom-left-radius: 2px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.1); }
-    
-    #chat-form { background: rgba(0,0,0,0.6); padding: 15px; display: flex; align-items: center; border-top: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-    #msg-input { flex-grow: 1; padding: 12px; margin-right: 10px; border-radius: 50px; border: none; background: rgba(255,255,255,0.1); color: white; transition: 0.3s; }
-    #msg-input:focus { background: rgba(255,255,255,0.2); box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-    .icon-btn { width: 45px; height: 45px; border-radius: 50%; border: none; color: white; font-size: 20px; cursor: pointer; display: flex; justify-content: center; align-items: center; background: linear-gradient(45deg, var(--neon-blue), #0051ff); margin-left: 5px; transition: 0.3s; }
-    .icon-btn:hover { transform: rotate(15deg) scale(1.1); box-shadow: 0 0 15px var(--neon-blue); }
-    
-    select { padding: 5px 10px; border-radius: 10px; border: 1px solid var(--neon-blue); background: rgba(0,0,0,0.5); color: white; transition: 0.3s; }
-    select:hover { box-shadow: 0 0 10px var(--neon-blue); }
-    option { background: black; }
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
 
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes popIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  </style>
+            /* Padding (Desktop default) */
+            padding: 40px 30px;
+
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            animation: floatCard 6s ease-in-out infinite;
+        }
+
+        /* Media Query for Small Phones */
+        @media (max-width: 480px) {
+            .auth-container {
+                width: 92%;
+                /* Thoda aur failaya taaki chipke nahi */
+                padding: 30px 20px;
+                /* Mobile par padding kam ki */
+            }
+
+            h2 {
+                font-size: 26px;
+                margin-bottom: 20px;
+            }
+        }
+
+        @keyframes floatCard {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h2 {
+            font-weight: 600;
+            background: linear-gradient(to right, var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 25px;
+            margin-top: 0;
+            font-size: 28px;
+            filter: drop-shadow(0 0 5px rgba(0, 242, 255, 0.5));
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        input {
+            padding: 15px;
+            width: 100%;
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 20px rgba(0, 242, 255, 0.4);
+            transform: scale(1.02);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(90deg, var(--neon-blue), #0051ff);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            margin-top: 10px;
+            transition: all 0.3s;
+        }
+
+        .auth-btn:hover {
+            transform: scale(1.05) translateY(-2px);
+            box-shadow: 0 0 30px var(--neon-blue);
+            letter-spacing: 1px;
+        }
+
+        .toggle-text {
+            margin-top: 20px;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .toggle-link {
+            color: var(--neon-gold);
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .toggle-link:hover {
+            text-shadow: 0 0 10px var(--neon-gold);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* --- CONTACTS & CHAT STYLES --- */
+        #header-contacts {
+            background: var(--header-bg);
+            padding: 20px;
+            font-size: 20px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #user-list {
+            list-style: none;
+            padding: 15px;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .user-card {
+            background: var(--glass-bg);
+            padding: 18px;
+            margin: 10px 0;
+            border-radius: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--neon-purple);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-dot {
+            height: 12px;
+            width: 12px;
+            background: #555;
+            border-radius: 50%;
+            transition: 0.3s;
+        }
+
+        .online {
+            background: #0f0;
+            box-shadow: 0 0 15px #0f0;
+        }
+
+        #screen-chat {
+            height: 100%;
+            position: relative;
+        }
+
+        #chat-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            z-index: 10;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #messages {
+            flex-grow: 1;
+            list-style: none;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .msg {
+            padding: 12px 18px;
+            border-radius: 20px;
+            max-width: 75%;
+            word-wrap: break-word;
+            animation: popIn 0.4s;
+            transition: 0.3s;
+        }
+
+        .msg:hover {
+            transform: scale(1.01);
+        }
+
+        .sent {
+            align-self: flex-end;
+            background: rgba(0, 242, 255, 0.15);
+            border: 1px solid var(--neon-blue);
+            color: white;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 0 10px rgba(0, 242, 255, 0.1);
+        }
+
+        .received {
+            align-self: flex-start;
+            background: rgba(255, 215, 0, 0.15);
+            border: 1px solid var(--neon-gold);
+            color: white;
+            border-bottom-left-radius: 2px;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.1);
+        }
+
+        #chat-form {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        #msg-input {
+            flex-grow: 1;
+            padding: 12px;
+            margin-right: 10px;
+            border-radius: 50px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: 0.3s;
+        }
+
+        #msg-input:focus {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(45deg, var(--neon-blue), #0051ff);
+            margin-left: 5px;
+            transition: 0.3s;
+        }
+
+        .icon-btn:hover {
+            transform: rotate(15deg) scale(1.1);
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+
+        select {
+            padding: 5px 10px;
+            border-radius: 10px;
+            border: 1px solid var(--neon-blue);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            transition: 0.3s;
+        }
+
+        select:hover {
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        option {
+            background: black;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-  <div id="screen-login" class="screen active">
-    
-    <div class="emoji-bg">
-        <span class="floating-emoji" style="left: 10%; animation-duration: 8s; animation-delay: 0s;">💬</span>
-        <span class="floating-emoji" style="left: 30%; animation-duration: 12s; animation-delay: 2s;">✨</span>
-        <span class="floating-emoji" style="left: 70%; animation-duration: 10s; animation-delay: 1s;">🪄</span>
-        <span class="floating-emoji" style="left: 50%; animation-duration: 15s; animation-delay: 4s;">🚀</span>
-        <span class="floating-emoji" style="left: 85%; animation-duration: 9s; animation-delay: 3s;">🔮</span>
-        <span class="floating-emoji" style="left: 20%; animation-duration: 11s; animation-delay: 5s;">📱</span>
-        <span class="floating-emoji" style="left: 60%; animation-duration: 13s; animation-delay: 6s;">🌐</span>
-        <span class="floating-emoji" style="left: 40%; animation-duration: 14s; animation-delay: 2s;">💬</span>
-        <span class="floating-emoji" style="left: 90%; animation-duration: 10s; animation-delay: 0s;">✨</span>
-    </div>
+    <div id="screen-login" class="screen active">
 
-    <div class="auth-container">
-        <h2>✨ Magic Chat ✨</h2>
-
-        <div id="login-box">
-            <div class="form-group">
-                <input id="login-user" placeholder="Username" autocomplete="off">
-                <input id="login-pass" type="password" placeholder="Password" autocomplete="off">
-                <button class="auth-btn" onclick="login()">Login</button>
-            </div>
-            <p class="toggle-text">New user? <span class="toggle-link" onclick="toggleAuth()">Create Account</span></p>
+        <div class="emoji-bg">
+            <span class="floating-emoji" style="left: 10%; animation-duration: 8s; animation-delay: 0s;">💬</span>
+            <span class="floating-emoji" style="left: 30%; animation-duration: 12s; animation-delay: 2s;">✨</span>
+            <span class="floating-emoji" style="left: 70%; animation-duration: 10s; animation-delay: 1s;">🪄</span>
+            <span class="floating-emoji" style="left: 50%; animation-duration: 15s; animation-delay: 4s;">🚀</span>
+            <span class="floating-emoji" style="left: 85%; animation-duration: 9s; animation-delay: 3s;">🔮</span>
+            <span class="floating-emoji" style="left: 20%; animation-duration: 11s; animation-delay: 5s;">📱</span>
+            <span class="floating-emoji" style="left: 60%; animation-duration: 13s; animation-delay: 6s;">🌐</span>
+            <span class="floating-emoji" style="left: 40%; animation-duration: 14s; animation-delay: 2s;">💬</span>
+            <span class="floating-emoji" style="left: 90%; animation-duration: 10s; animation-delay: 0s;">✨</span>
         </div>
 
-        <div id="signup-box" class="hidden">
-            <div class="form-group">
-                <input id="signup-user" placeholder="Choose Username" autocomplete="off">
-                <input id="signup-pass" type="password" placeholder="Choose Password" autocomplete="off">
-                <button class="auth-btn" onclick="signup()">Sign Up</button>
+        <div class="auth-container">
+            <h2>✨ Magic Chat ✨</h2>
+
+            <div id="login-box">
+                <div class="form-group">
+                    <input id="login-user" placeholder="Username" autocomplete="off">
+                    <input id="login-pass" type="password" placeholder="Password" autocomplete="off">
+                    <button class="auth-btn" onclick="login()">Login</button>
+                </div>
+                <p class="toggle-text">New user? <span class="toggle-link" onclick="toggleAuth()">Create Account</span>
+                </p>
             </div>
-            <p class="toggle-text">Already have an account? <span class="toggle-link" onclick="toggleAuth()">Login</span></p>
+
+            <div id="signup-box" class="hidden">
+                <div class="form-group">
+                    <input id="signup-user" placeholder="Choose Username" autocomplete="off">
+                    <input id="signup-pass" type="password" placeholder="Choose Password" autocomplete="off">
+                    <button class="auth-btn" onclick="signup()">Sign Up</button>
+                </div>
+                <p class="toggle-text">Already have an account? <span class="toggle-link"
+                        onclick="toggleAuth()">Login</span></p>
+            </div>
+
+            <p id="error-msg" style="color: #ff3b30; font-weight: bold; margin-top: 15px;"></p>
         </div>
-
-        <p id="error-msg" style="color: #ff3b30; font-weight: bold; margin-top: 15px;"></p>
     </div>
-  </div>
 
-  <div id="screen-contacts" class="screen">
-    <div id="header-contacts">
-        <span>Contacts 👥</span>
-        <button onclick="logout()" style="background:none;border:1px solid #ff3b30;color:#ff3b30;border-radius:10px;padding:5px 15px;cursor:pointer;transition:0.3s;">Logout</button>
+    <div id="screen-contacts" class="screen">
+        <div id="header-contacts">
+            <span>Contacts 👥</span>
+            <button onclick="logout()"
+                style="background:none;border:1px solid #ff3b30;color:#ff3b30;border-radius:10px;padding:5px 15px;cursor:pointer;transition:0.3s;">Logout</button>
+        </div>
+        <ul id="user-list"></ul>
     </div>
-    <ul id="user-list"></ul>
-  </div>
 
-  <div id="screen-chat" class="screen">
-    <div id="chat-header">
-      <button onclick="showContacts()" style="background:none;border:none;color:white;font-size:24px; cursor:pointer; transition:0.3s;">⬅</button>
-      <select id="lang-select">
-        <option value="en-US">English</option>
-        <option value="hi-IN">Hindi</option>
-        <option value="es-ES">Spanish</option>
-        <option value="fr-FR">French</option>
-        <option value="ja-JP">Japanese</option>
-        <option value="ru-RU">Russian</option>
-      </select>
+    <div id="screen-chat" class="screen">
+        <div id="chat-header">
+            <button onclick="showContacts()"
+                style="background:none;border:none;color:white;font-size:24px; cursor:pointer; transition:0.3s;">⬅</button>
+            <select id="lang-select">
+                <option value="en-US">English</option>
+                <option value="hi-IN">Hindi</option>
+                <option value="es-ES">Spanish</option>
+                <option value="fr-FR">French</option>
+                <option value="ja-JP">Japanese</option>
+                <option value="ru-RU">Russian</option>
+            </select>
+        </div>
+        <ul id="messages"></ul>
+        <form id="chat-form">
+            <input id="msg-input" placeholder="Type magic here..." autocomplete="off">
+            <button type="button" id="mic-btn" class="icon-btn">🎤</button>
+            <button id="send-btn" class="icon-btn">➤</button>
+        </form>
     </div>
-    <ul id="messages"></ul>
-    <form id="chat-form">
-      <input id="msg-input" placeholder="Type magic here..." autocomplete="off">
-      <button type="button" id="mic-btn" class="icon-btn">🎤</button>
-      <button id="send-btn" class="icon-btn">➤</button>
-    </form>
-  </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const socket = io();
-    let currentRoom = "";
-    let myUserName = "";
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let currentRoom = "";
+        let myUserName = "";
 
-    function toggleAuth() {
-        const loginBox = document.getElementById('login-box');
-        const signupBox = document.getElementById('signup-box');
-        const errorMsg = document.getElementById('error-msg');
-        
-        if (loginBox.classList.contains('hidden')) {
-            loginBox.classList.remove('hidden'); signupBox.classList.add('hidden');
-        } else {
-            loginBox.classList.add('hidden'); signupBox.classList.remove('hidden');
+        function toggleAuth() {
+            const loginBox = document.getElementById('login-box');
+            const signupBox = document.getElementById('signup-box');
+            const errorMsg = document.getElementById('error-msg');
+
+            if (loginBox.classList.contains('hidden')) {
+                loginBox.classList.remove('hidden'); signupBox.classList.add('hidden');
+            } else {
+                loginBox.classList.add('hidden'); signupBox.classList.remove('hidden');
+            }
+            errorMsg.innerText = "";
         }
-        errorMsg.innerText = "";
-    }
 
-    if(window.visualViewport) {
-        const messagesUl = document.getElementById('messages');
-        window.visualViewport.addEventListener('resize', () => {
-            if(document.activeElement.tagName === 'INPUT') {
-                 setTimeout(() => messagesUl.scrollTop = messagesUl.scrollHeight, 100);
+        if (window.visualViewport) {
+            const messagesUl = document.getElementById('messages');
+            window.visualViewport.addEventListener('resize', () => {
+                if (document.activeElement.tagName === 'INPUT') {
+                    setTimeout(() => messagesUl.scrollTop = messagesUl.scrollHeight, 100);
+                }
+            });
+        }
+
+        function login() {
+            const u = document.getElementById('login-user').value.trim();
+            const p = document.getElementById('login-pass').value.trim();
+            if (!u || !p) return alert("Username & Password required");
+            socket.emit('login', { name: u, password: p });
+        }
+
+        function signup() {
+            const u = document.getElementById('signup-user').value.trim();
+            const p = document.getElementById('signup-pass').value.trim();
+            if (!u || !p) return alert("Username & Password required");
+            socket.emit('signup', { name: u, password: p });
+        }
+
+        function logout() { location.reload(); }
+
+        socket.on('auth_success', (data) => {
+            myUserName = data.name;
+            if (data.lang) document.getElementById('lang-select').value = data.lang;
+            document.getElementById('screen-login').classList.remove('active');
+            document.getElementById('screen-contacts').classList.add('active');
+            socket.emit('get_users');
+            updateLanguage();
+        });
+        socket.on('auth_error', (msg) => document.getElementById('error-msg').innerText = msg);
+
+        const langSelect = document.getElementById('lang-select');
+        function updateLanguage() { socket.emit('set_language', langSelect.value); }
+        langSelect.addEventListener('change', updateLanguage);
+
+        socket.on('user_list', (users) => {
+            const list = document.getElementById('user-list');
+            list.innerHTML = "";
+            users.forEach(user => {
+                const li = document.createElement('li');
+                li.className = "user-card";
+                li.innerHTML = `<span>${user.name}</span><span class="status-dot ${user.isOnline ? 'online' : ''}"></span>`;
+                li.onclick = () => {
+                    document.getElementById('messages').innerHTML = "";
+                    socket.emit('join_private', { toUser: user.name });
+                };
+                list.appendChild(li);
+            });
+        });
+        socket.on('refresh_users', () => { if (document.getElementById('screen-contacts').classList.contains('active')) socket.emit('get_users'); });
+
+        socket.on('room_joined', (data) => {
+            currentRoom = data.roomID;
+            document.getElementById('screen-contacts').classList.remove('active');
+            document.getElementById('screen-chat').classList.add('active');
+        });
+
+        socket.on('chat_history', (messages) => {
+            const ul = document.getElementById('messages');
+            ul.innerHTML = "";
+            messages.forEach(msg => {
+                const isMe = msg.sender === myUserName;
+                const li = document.createElement('li');
+                li.className = `msg ${isMe ? 'sent' : 'received'}`;
+                li.innerText = msg.text;
+                ul.appendChild(li);
+            });
+            ul.scrollTop = ul.scrollHeight;
+        });
+
+        document.getElementById('chat-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const input = document.getElementById('msg-input');
+            if (input.value && currentRoom) {
+                socket.emit('private_message', { roomID: currentRoom, msg: input.value });
+                input.value = '';
+                input.focus();
             }
         });
-    }
 
-    function login() { 
-        const u = document.getElementById('login-user').value.trim();
-        const p = document.getElementById('login-pass').value.trim();
-        if(!u || !p) return alert("Username & Password required");
-        socket.emit('login', { name: u, password: p }); 
-    }
-
-    function signup() { 
-        const u = document.getElementById('signup-user').value.trim();
-        const p = document.getElementById('signup-pass').value.trim();
-        if(!u || !p) return alert("Username & Password required");
-        socket.emit('signup', { name: u, password: p }); 
-    }
-    
-    function logout() { location.reload(); }
-
-    socket.on('auth_success', (data) => { 
-        myUserName = data.name;
-        if(data.lang) document.getElementById('lang-select').value = data.lang;
-        document.getElementById('screen-login').classList.remove('active');
-        document.getElementById('screen-contacts').classList.add('active');
-        socket.emit('get_users');
-        updateLanguage();
-    });
-    socket.on('auth_error', (msg) => document.getElementById('error-msg').innerText = msg);
-
-    const langSelect = document.getElementById('lang-select');
-    function updateLanguage() { socket.emit('set_language', langSelect.value); }
-    langSelect.addEventListener('change', updateLanguage);
-
-    socket.on('user_list', (users) => {
-        const list = document.getElementById('user-list');
-        list.innerHTML = "";
-        users.forEach(user => {
+        socket.on('receive_message', (data) => {
+            const ul = document.getElementById('messages');
             const li = document.createElement('li');
-            li.className = "user-card";
-            li.innerHTML = `<span>${user.name}</span><span class="status-dot ${user.isOnline?'online':''}"></span>`;
-            li.onclick = () => {
-                document.getElementById('messages').innerHTML = "";
-                socket.emit('join_private', { toUser: user.name });
-            };
-            list.appendChild(li);
-        });
-    });
-    socket.on('refresh_users', () => { if(document.getElementById('screen-contacts').classList.contains('active')) socket.emit('get_users'); });
-
-    socket.on('room_joined', (data) => {
-        currentRoom = data.roomID;
-        document.getElementById('screen-contacts').classList.remove('active');
-        document.getElementById('screen-chat').classList.add('active');
-    });
-
-    socket.on('chat_history', (messages) => {
-        const ul = document.getElementById('messages');
-        ul.innerHTML = "";
-        messages.forEach(msg => {
-            const isMe = msg.sender === myUserName;
-            const li = document.createElement('li');
-            li.className = `msg ${isMe ? 'sent' : 'received'}`;
-            li.innerText = msg.text;
+            li.className = `msg ${data.isMe ? 'sent' : 'received'}`;
+            li.innerText = data.text;
             ul.appendChild(li);
+            ul.scrollTop = ul.scrollHeight;
         });
-        ul.scrollTop = ul.scrollHeight;
-    });
 
-    document.getElementById('chat-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const input = document.getElementById('msg-input');
-        if(input.value && currentRoom) {
-            socket.emit('private_message', { roomID: currentRoom, msg: input.value });
-            input.value = '';
-            input.focus();
-        }
-    });
+        const micBtn = document.getElementById('mic-btn');
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-    socket.on('receive_message', (data) => {
-        const ul = document.getElementById('messages');
-        const li = document.createElement('li');
-        li.className = `msg ${data.isMe ? 'sent' : 'received'}`;
-        li.innerText = data.text;
-        ul.appendChild(li);
-        ul.scrollTop = ul.scrollHeight;
-    });
-
-    const micBtn = document.getElementById('mic-btn');
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (SpeechRecognition) {
-        const recognition = new SpeechRecognition();
-        recognition.continuous = false;
-        micBtn.addEventListener('click', () => {
-            recognition.lang = langSelect.value; 
-            recognition.start();
-        });
-        recognition.onstart = () => { micBtn.classList.add("listening"); };
-        recognition.onend = () => { micBtn.classList.remove("listening"); };
-        recognition.onresult = (event) => { document.getElementById('msg-input').value = event.results[0][0].transcript; };
-    } else { micBtn.style.display = 'none'; }
-  </script>
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            micBtn.addEventListener('click', () => {
+                recognition.lang = langSelect.value;
+                recognition.start();
+            });
+            recognition.onstart = () => { micBtn.classList.add("listening"); };
+            recognition.onend = () => { micBtn.classList.remove("listening"); };
+            recognition.onresult = (event) => { document.getElementById('msg-input').value = event.results[0][0].transcript; };
+        } else { micBtn.style.display = 'none'; }
+    </script>
 </body>
+
 </html>
